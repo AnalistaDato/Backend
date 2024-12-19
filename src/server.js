@@ -20,11 +20,7 @@ const corsOptions = {
       }
     } else {
       // En desarrollo, permitir localhost
-      if (origin === "http://localhost:4200") {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
+      callback(null, true);
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -33,7 +29,8 @@ const corsOptions = {
 
 
 // Configuración de CORS
-app.options('*', cors(corsOptions)); // Preflight response for all routes
+app.use(cors()); // Esto permite todas las solicitudes de cualquier origen.
+ // Preflight response for all routes
 
 
 // Manejo del cuerpo de las solicitudes
