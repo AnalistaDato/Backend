@@ -31,7 +31,7 @@ const corsOptions = {
 // Configuración de CORS
 app.use(cors()); // Esto permite todas las solicitudes de cualquier origen.
  // Preflight response for all routes
-
+ app.use(express.static(path.join(__dirname, 'public')));
 
 // Manejo del cuerpo de las solicitudes
 app.use(bodyParser.json());
