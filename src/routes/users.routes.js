@@ -1,16 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const authGuard = require("../middleware/authGuard");
 
 // Obtener todos los usuarios
-router.get("/users", async (req, res) => {
+router.get("/users",  async (req, res) => {
   try {
-    const { draw, start, length, search, order, columns } = req.query;
+
+
+    const { draw, start, length, search } = req.query;
 
     const drawInt = parseInt(draw, 10) || 1;
     const startInt = parseInt(start, 10) || 0;
     const lengthInt = parseInt(length, 10) || 10;
-    let searchValue = search ? `%${search}%` : "%%";
+    let searchValue = `%${(search || "").trim()}%`;
 
     let query = `
       SELECT Id, Username, Email, Rol, Estado
@@ -40,7 +43,7 @@ router.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT Id, Username, Email, Rol, Estado FROM users WHERE Id = ?", [id]);
-    
+
     if (rows.length > 0) {
       res.json(rows[0]);
     } else {
@@ -56,6 +59,11 @@ router.get("/users/:id", async (req, res) => {
 router.post("/users", async (req, res) => {
   try {
     const { Username, Email, Rol, Estado } = req.body;
+
+    if (!Username || !Email || !Rol || !Estado) {
+      return res.status(400).json({ message: "Todos los campos son obligatorios." });
+    }
+
     const query = "INSERT INTO users (username, email, rol, estado) VALUES (?, ?, ?, ?)";
     const [result] = await pool.query(query, [Username, Email, Rol, Estado]);
 
@@ -70,32 +78,13 @@ router.post("/users", async (req, res) => {
   }
 });
 
-// Actualizar un usuario
-router.put("/users/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { Username, Email, Rol, Estado } = req.body;
-    const query = "UPDATE users SET username = ?, email = ?, rol = ?, estado = ? WHERE id = ?";
-    const [result] = await pool.query(query, [Username, Email, Rol, Estado, id]);
-
-    if (result.affectedRows > 0) {
-      res.json({ message: "Usuario actualizado correctamente" });
-    } else {
-      res.status(404).json({ message: "Usuario no encontrado" });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error al actualizar el usuario");
-  }
-});
-
 // Activar o inactivar un usuario
 router.put("/users/:id/status", async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // 'A' o 'I'
+    const { status } = req.body;
 
-    if (status !== 'A' && status !== 'I') {
+    if (status !== "A" && status !== "I") {
       return res.status(400).json({ message: "Estado inválido. Usa 'A' o 'I'." });
     }
 
@@ -103,7 +92,7 @@ router.put("/users/:id/status", async (req, res) => {
     const [result] = await pool.query(query, [status, id]);
 
     if (result.affectedRows > 0) {
-      const action = status === 'A' ? 'activado' : 'inactivado';
+      const action = status === "A" ? "activado" : "inactivado";
       res.json({ message: `Usuario ${action} correctamente` });
     } else {
       res.status(404).json({ message: "Usuario no encontrado" });
@@ -111,6 +100,30 @@ router.put("/users/:id/status", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Error al actualizar el estado del usuario");
+  }
+});
+
+// Actualizar usuario
+router.put("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, email, rol, estado } = req.body;
+
+    if (!username || !email || !rol || !estado) {
+      return res.status(400).json({ message: "Todos los campos son obligatorios." });
+    }
+
+    const query = "UPDATE users SET username = ?, email = ?, rol = ?, estado = ? WHERE id = ?";
+    const [result] = await pool.query(query, [username, email, rol, estado, id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: "Usuario actualizado exitosamente" });
+    } else {
+      res.status(404).json({ message: "Usuario no encontrado" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error al actualizar el usuario");
   }
 });
 

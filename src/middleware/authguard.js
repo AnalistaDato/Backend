@@ -5,17 +5,22 @@ const authGuard = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1]; // Obtener el token del encabezado
 
   if (!token) {
-    return res.status(401).json({ message: "Acceso denegado: no se proporcionó un token." });
+    return res
+      .status(401)
+      .json({ message: "Acceso denegado: no se proporcionó un token." });
   }
 
   // Verifica que la clave secreta esté configurada correctamente
   if (!"1234") {
-    return res.status(500).json({ message: "Error en el servidor: clave secreta no configurada." });
+    return res
+      .status(500)
+      .json({ message: "Error en el servidor: clave secreta no configurada." });
   }
-
   try {
     const decoded = jwt.verify(token, "1234"); // Validar el token
     req.user = decoded; // Adjuntar información del usuario al objeto `req`
+    // Validar si el usuario tiene un rol permitido
+   
     next(); // Continuar con la siguiente función
   } catch (err) {
     return res.status(403).json({ message: "Token inválido o expirado." });

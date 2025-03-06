@@ -131,32 +131,9 @@ router.get("/datos/:id", async (req, res) => {
     const [rows] = await pool.query(
       `
       SELECT 
-        f.id,
-        f.numero,
-        f.nombre_socio,
-        f.fecha_factura,
-        f.fecha_vencimiento,
-        f.actividades,
-        f.importe_sin_impuestos,
-        f.impuestos,
-        f.total,
-        f.total_en_divisa,
-        f.importe_adeudado,
-        f.estado_pago,
-        f.estado,
-        f.estado_g,
-        f.fecha_reprogramacion,
-        f.conf_banco,
-        f.nuevo_pago,
-        f.empresa,
-        f.diferencia,
-        f.cuenta_contable, 
-        c.cuenta AS cuenta_bancaria_numero,
-        o.cuenta_contable AS cuenta_contable_c
-      FROM facturas f
-      LEFT JOIN cuentas_bancarias c ON f.conf_banco = c.id
-      LEFT JOIN cuentas_contables o ON f.numero = o.factura   
-      WHERE f.id = ?
+        id,
+      FROM users f 
+      WHERE id = ?
     `,
       [id]
     );
@@ -164,18 +141,13 @@ router.get("/datos/:id", async (req, res) => {
     if (rows.length > 0) {
       const factura = rows[0];
 
-      // Formatear las fechas antes de devolver los resultados
-      factura.fecha_factura = formatDate(factura.fecha_factura);
-      factura.fecha_vencimiento = formatDate(factura.fecha_vencimiento);
-      factura.fecha_reprogramacion = formatDate(factura.fecha_reprogramacion);
-
       res.json(factura);
     } else {
-      res.status(404).json({ message: "Factura no encontrada" });
+      res.status(404).json({ message: "Usuario no encontrada" });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error al obtener la factura");
+    res.status(500).send("Error al obtener el usuario");
   }
 });
 // Nueva ruta para inactivar una factura
