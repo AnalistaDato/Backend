@@ -43,6 +43,7 @@ require("./routes")(app);
 cron.schedule("0 0 * * *", () => {
   console.log("Ejecutando script Python a medianoche");
   runPythonScript();
+  runPythonScript_2();
 });
 
 // Función para ejecutar el script de Python
@@ -62,6 +63,24 @@ function runPythonScript() {
     }
   });
 }
+
+function runPythonScript_2() {
+  const scriptPath = path.join(__dirname, "Scripts", "script_8.py");
+
+  PythonShell.run(scriptPath, null, (err, result) => {
+    if (err) {
+      console.error(`Error ejecutando el script: ${err.message}`);
+      console.error("Detalles del error:", err);
+      return;
+    }
+    if (result) {
+      console.log("Resultado del script:", result.join("\n"));
+    } else {
+      console.log("No se recibió resultado del script.");
+    }
+  });
+}
+
 
 
 app.listen(port, () => {

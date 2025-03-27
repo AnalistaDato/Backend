@@ -16,11 +16,13 @@ const masivo = require("./routes/masivo.routes");
 const restablecer = require("./routes/forgot_password.routes");
 const register = require("./routes/register.routes");
 const users = require("./routes/users.routes");
+const all = require("./routes/allFactures.routes");
 
 module.exports = (app) => {
   app.use("/api/auth", authRoutes);
   app.use("/api", restablecer);
   app.use("/api", register);
+  app.use("/api",authGuard, all);
   app.use("/api", authGuard, uploadRoutes);
   app.use("/api/datos", authGuard, dataRoutes);
   app.use("/api/datos", authGuard, dataExtrtactoRoutes);
