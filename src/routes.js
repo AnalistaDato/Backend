@@ -17,7 +17,7 @@ const restablecer = require("./routes/forgot_password.routes");
 const register = require("./routes/register.routes");
 const users = require("./routes/users.routes");
 const all = require("./routes/allFactures.routes");
-const proyecciones = require("./routes/proyecciones.routes");
+const proyectado = require("./routes/proyectado.routes");
 
 module.exports = (app) => {
   app.use("/api/auth", authRoutes);
@@ -37,5 +37,5 @@ module.exports = (app) => {
   app.use("/api", authGuard, facturasdata);
   app.use("/api", authGuard, masivo);
   app.use("/api", authGuard, users);
-  app.use("/api", authGuard, proyecciones);
+  app.use("/api", authGuard, proyectado);
 };

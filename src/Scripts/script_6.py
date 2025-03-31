@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     # Procesa el archivo y guarda el DataFrame resultante
     df = process_file(file_path)
-
+    print(f"Procesando archivo: {file_path}")
     # Muestra información del DataFrame
     print("Contenido del DataFrame:")
     print(df.head())  # Muestra las primeras filas del DataFrame
