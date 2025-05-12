@@ -17,18 +17,19 @@ def fetch_data_from_db(empresa, banco, engine):
         query = f"""
         SELECT fecha, COALESCE(fecha_reprogramacion, fecha) AS fecha_uso, credito, debito, tipo_transaccion
         FROM facturas_consolidadas
-        WHERE empresa = '{empresa}' AND banco = '{banco}'
+        WHERE empresa = '{empresa}' AND banco = '{banco}' AND estado != 'proyectado'
         ORDER BY fecha_uso
         """
     else:
         query = f"""
         SELECT fecha AS fecha_uso, credito, debito, tipo_transaccion
         FROM facturas_consolidadas
-        WHERE empresa = '{empresa}' AND banco = '{banco}'
+        WHERE empresa = '{empresa}' AND banco = '{banco}' AND estado != 'proyectado'
         ORDER BY fecha
         """
 
     return pd.read_sql(query, engine)
+
 
 # Generar columna de fecha efectiva
 def determine_effective_date(df):
